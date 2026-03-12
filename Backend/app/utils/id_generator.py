@@ -24,4 +24,3 @@ class IdGenerator:
         return f"{prefix}_{uuid.uuid4().hex[:8]}"
         # f-string combines the prefix with the unique part
         # Example: "cmp" + "_" + "a3f9b2c1"
-    
