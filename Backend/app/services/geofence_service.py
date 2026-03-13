@@ -7,6 +7,7 @@ from app.core.redis_client import redis_client
 
 def get_nearby_complaints(db: Session, lat: float, lng: float):
 
+    # cache key based on rounded coordinates
     cache_key = f"geo:{round(lat,3)}:{round(lng,3)}"
 
     cached = redis_client.get(cache_key)
@@ -36,6 +37,7 @@ def get_nearby_complaints(db: Session, lat: float, lng: float):
             FROM complaints c
             JOIN locations l
             ON c.location_id = l.location_id
+            WHERE c.is_hidden = FALSE
         ) AS subquery
         WHERE distance < 5000
         ORDER BY distance
@@ -50,7 +52,7 @@ def get_nearby_complaints(db: Session, lat: float, lng: float):
         data = dict(row._mapping)
         complaints.append(data)
 
-    # Cache result for 5 minutes
+    # cache result for 5 minutes
     redis_client.setex(cache_key, 300, json.dumps(complaints, default=str))
 
     return complaints

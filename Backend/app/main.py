@@ -15,6 +15,7 @@ from app.models.department import Department
 from app.models.location import Location
 from app.models.complaint import Complaint
 from app.models.complaint_image import ComplaintImage
+from app.models.complaint_verification import ComplaintVerification
 
 
 # Create the FastAPI application

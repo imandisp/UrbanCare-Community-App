@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Text, ForeignKey, DateTime, Boolean, Integer
+from sqlalchemy import Column, String, Text, ForeignKey, DateTime, Integer, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 import uuid
@@ -7,36 +7,31 @@ from app.database import Base
 
 
 class Complaint(Base):
+
     __tablename__ = "complaints"
 
     complaint_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
-    citizen_id = Column(UUID(as_uuid=True), ForeignKey("citizens.user_id"))
+    citizen_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False)
 
-    assigned_authority_id = Column(UUID(as_uuid=True), ForeignKey("authorities.authority_id"), nullable=True)
+    location_id = Column(UUID(as_uuid=True), ForeignKey("locations.location_id"), nullable=False)
 
-    location_id = Column(UUID(as_uuid=True), ForeignKey("locations.location_id"))
+    issue_type = Column(String(50), nullable=False)
 
-    issue_type = Column(Text, nullable=False)
+    title = Column(String(150), nullable=False)
 
     description = Column(Text, nullable=False)
 
-    status = Column(Text, default="created")
+    status = Column(String(30), default="pending")
 
-    primary_image_url = Column(Text)
+    priority = Column(String(20), default="medium")
 
-    estimated_fix_at = Column(DateTime(timezone=True))
-    fixed_at = Column(DateTime(timezone=True))
+    verification_count = Column(Integer, default=0)
 
-    community_verified = Column(Boolean, default=False)
+    not_fixed_count = Column(Integer, default=0)
 
-    confirm_yes_count = Column(Integer, default=0)
-    confirm_no_count = Column(Integer, default=0)
+    is_hidden = Column(Boolean, default=False)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    updated_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now()
-    )
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
