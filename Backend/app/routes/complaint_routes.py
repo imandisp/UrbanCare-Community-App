@@ -77,3 +77,22 @@ def get_complaint(complaint_id: UUID, db: Session = Depends(get_db)):
 
     # Return complaint if found
     return complaint
+
+from app.services.complaint_verification_service import ComplaintVerificationService
+
+
+@router.post("/{complaint_id}/verify")
+def verify_complaint(
+    complaint_id: str,
+    citizen_id: str,
+    is_fixed: bool,
+    db: Session = Depends(get_db)
+):
+
+    service = ComplaintVerificationService(db)
+
+    return service.verify_complaint(
+        complaint_id,
+        citizen_id,
+        is_fixed
+    )
