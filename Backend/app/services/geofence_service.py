@@ -2,25 +2,19 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 import json
 
-try:
-    from core.redis_client import redis_client
-except:
-    redis_client = None
+from core.redis_client import redis_client
 
 
 def get_nearby_complaints(db: Session, lat: float, lng: float):
 
     cache_key = f"geo:{round(lat,3)}:{round(lng,3)}"
 
-    # Try reading cache
-    if redis_client:
-        try:
-            cached = redis_client.get(cache_key)
-            if cached:
-                return json.loads(cached)
-        except:
-            pass
+    cached = redis_client.get(cache_key)
 
+    if cached:
+        return json.loads(cached)
+
+    # Haversine distance formula (in meters)
     query = text("""
         SELECT
             c.complaint_id,
@@ -28,22 +22,28 @@ def get_nearby_complaints(db: Session, lat: float, lng: float):
             c.status,
             l.latitude,
             l.longitude,
-            l.address
+            l.address,
+            (
+                6371000 * acos(
+                    cos(radians(:lat)) *
+                    cos(radians(l.latitude)) *
+                    cos(radians(l.longitude) - radians(:lng)) +
+                    sin(radians(:lat)) *
+                    sin(radians(l.latitude))
+                )
+            ) AS distance
         FROM complaints c
         JOIN locations l
         ON c.location_id = l.location_id
+        HAVING distance < 5000
+        ORDER BY distance
         LIMIT 50
     """)
 
-    result = db.execute(query)
+    result = db.execute(query, {"lat": lat, "lng": lng})
 
     complaints = [dict(row._mapping) for row in result]
 
-    # Try writing cache
-    if redis_client:
-        try:
-            redis_client.setex(cache_key, 300, json.dumps(complaints))
-        except:
-            pass
+    redis_client.setex(cache_key, 300, json.dumps(complaints))
 
     return complaints
