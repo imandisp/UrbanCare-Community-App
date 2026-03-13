@@ -4,6 +4,7 @@ from fastapi import FastAPI
 # Import route files
 from app.routes import auth_routes
 from app.routes import complaint_routes
+from app.routes import geofence_routes
 
 # Import models so SQLAlchemy knows about them
 # These imports help register the tables in the ORM
@@ -34,6 +35,7 @@ app.include_router(auth_routes.router)
 # GET /complaints
 # GET /complaints/{complaint_id}
 app.include_router(complaint_routes.router)
+app.include_router(geofence_routes.router)
 
 
 # Simple test route
