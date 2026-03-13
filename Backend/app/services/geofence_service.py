@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 import json
 
-from core.redis_client import redis_client
+from app.core.redis_client import redis_client
 
 
 def get_nearby_complaints(db: Session, lat: float, lng: float):
