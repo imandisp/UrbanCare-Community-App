@@ -11,6 +11,7 @@ from app.database import get_db
 
 # Import schemas for request and response validation
 from app.schemas.complaint import ComplaintCreate, ComplaintResponse
+from app.schemas.complaint_schema import ComplaintCreate, ComplaintResponse
 
 # Import the service layer
 from app.services.complaint_service import ComplaintService
@@ -18,6 +19,7 @@ from app.services.complaint_service import ComplaintService
 # List is used for returning multiple complaints
 from typing import List
 
+from uuid import UUID
 
 # Create a router object
 # prefix="/complaints" means all routes start with /complaints
@@ -61,7 +63,8 @@ def get_all_complaints(db: Session = Depends(get_db)):
 # Get one complaint by ID
 # ----------------------------------------
 @router.get("/{complaint_id}", response_model=ComplaintResponse)
-def get_complaint(complaint_id: str, db: Session = Depends(get_db)):
+
+def get_complaint(complaint_id: UUID, db: Session = Depends(get_db)):
 
     # Create service object
     service = ComplaintService(db)
