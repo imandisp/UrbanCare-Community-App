@@ -43,3 +43,6 @@ CREATE INDEX idx_complaints_citizen_status ON complaints USING BTREE (citizen_id
 CREATE INDEX idx_complaints_auth_status ON complaints USING BTREE (assigned_authority_id, status);
 CREATE INDEX idx_complaints_created_at ON complaints USING BTREE (created_at DESC);
 CREATE INDEX idx_complaints_type_status ON complaints USING BTREE (issue_type, status);
+
+ALTER TABLE complaints
+ADD COLUMN IF NOT EXISTS title VARCHAR(150);
