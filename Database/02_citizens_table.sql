@@ -3,16 +3,14 @@ CREATE TABLE citizens (
     user_id UUID PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
     
     -- Citizen Specific Data
-    phone_number VARCHAR(15),
     address TEXT,
     date_of_birth DATE,
-    fcm_token TEXT,
+    fcm_token TEXT, -- NEWLY ADDED
     
     -- Added Tracking Timestamps
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW(), -- NEWLY ADDED
+    updated_at TIMESTAMPTZ DEFAULT NOW()  -- NEWLY ADDED
 );
-
 
 CREATE TRIGGER set_citizens_updated_at 
 BEFORE UPDATE ON citizens 
