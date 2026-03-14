@@ -7,7 +7,7 @@ CREATE TABLE departments (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2. Create the Authorities 
+-- 2. Create the Authorities Table (CORRECTED VERSION)
 CREATE TABLE authorities (
     -- Links back to users table (1:1 Inheritance)
     authority_id UUID PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
