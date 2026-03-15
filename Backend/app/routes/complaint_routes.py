@@ -15,6 +15,13 @@ from app.schemas.complaint_schema import ComplaintCreate, ComplaintResponse
 # Import the service layer
 from app.services.complaint_service import ComplaintService
 
+from app.dependencies.auth_dependency import get_current_user
+
+from app.services.complaint_verification_service import ComplaintVerificationService
+
+
+from app.dependencies.auth_dependency import get_current_user
+
 # List is used for returning multiple complaints
 from typing import List
 
@@ -30,17 +37,23 @@ router = APIRouter(prefix="/complaints", tags=["Complaints"])
 # POST /complaints
 # Create a new complaint
 # ----------------------------------------
-@router.post("/", response_model=ComplaintResponse)
-def create_complaint(data: ComplaintCreate, db: Session = Depends(get_db)):
 
-    # Create service object and pass database session into it
+
+
+@router.post("/", response_model=ComplaintResponse)
+def create_complaint(
+    data: ComplaintCreate,
+    user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
     service = ComplaintService(db)
 
-    # Call service method to create complaint
-    complaint = service.create_complaint(data)
+    complaint = service.create_complaint(data, user["user_id"])
 
-    # Return the saved complaint
     return complaint
+
+
 
 
 # ----------------------------------------
@@ -78,14 +91,12 @@ def get_complaint(complaint_id: UUID, db: Session = Depends(get_db)):
     # Return complaint if found
     return complaint
 
-from app.services.complaint_verification_service import ComplaintVerificationService
-
 
 @router.post("/{complaint_id}/verify")
 def verify_complaint(
     complaint_id: str,
-    citizen_id: str,
     is_fixed: bool,
+    user = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
 
@@ -93,6 +104,6 @@ def verify_complaint(
 
     return service.verify_complaint(
         complaint_id,
-        citizen_id,
+        user["user_id"],
         is_fixed
     )

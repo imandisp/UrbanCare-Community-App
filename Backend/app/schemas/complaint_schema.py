@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 
@@ -12,16 +12,12 @@ class LocationCreate(BaseModel):
 
 
 class ComplaintCreate(BaseModel):
-
-    citizen_id: UUID
-
     issue_type: str
-
+    title: str
     description: str
-
+    priority: Optional[str] = "medium"
     location: LocationCreate
-
-    primary_image_url: Optional[str] = None
+    image_urls: Optional[List[str]] = []
 
 
 class ComplaintResponse(BaseModel):

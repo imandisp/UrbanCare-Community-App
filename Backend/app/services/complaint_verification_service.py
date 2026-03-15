@@ -46,7 +46,7 @@ class ComplaintVerificationService:
 
         # hide complaint if enough confirmations
         if complaint.verification_count >= 10:
-            complaint.status = "hidden"
+            complaint.status = "fixed"
             complaint.is_hidden = True
 
         # reopen complaint

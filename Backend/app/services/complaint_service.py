@@ -11,7 +11,8 @@ class ComplaintService:
         self.db = db
 
 
-    def create_complaint(self, data):
+    def create_complaint(self, data, citizen_id):
+
 
         # -----------------------------
         # STEP 1 — Save location
@@ -32,11 +33,13 @@ class ComplaintService:
         # STEP 2 — Save complaint
         # -----------------------------
         complaint = Complaint(
-            citizen_id=data.citizen_id,
+            citizen_id=citizen_id,
             location_id=location.location_id,
             issue_type=data.issue_type,
+            title=data.title,
             description=data.description,
-            primary_image_url=data.primary_image_url
+            status="created",
+            priority=data.priority
         )
 
         self.db.add(complaint)
@@ -44,7 +47,19 @@ class ComplaintService:
 
 
         # -----------------------------
-        # STEP 3 — Commit transaction
+        # STEP 3 — Save images
+        # -----------------------------
+        if data.image_urls:
+            for url in data.image_urls:
+                image = ComplaintImage(
+                    complaint_id=complaint.complaint_id,
+                    image_url=url
+                )
+                self.db.add(image)
+
+
+        # -----------------------------
+        # STEP 4 — Commit transaction
         # -----------------------------
         self.db.commit()
         self.db.refresh(complaint)
@@ -53,12 +68,10 @@ class ComplaintService:
 
 
     def get_all_complaints(self):
-
         return self.db.query(Complaint).all()
 
 
     def get_complaint_by_id(self, complaint_id):
-
         return (
             self.db.query(Complaint)
             .filter(Complaint.complaint_id == complaint_id)
