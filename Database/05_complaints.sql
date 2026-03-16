@@ -13,8 +13,10 @@ CREATE TABLE complaints (
     location_id UUID REFERENCES locations(location_id),
     
     -- Core Complaint Data
+    title VARCHAR(150),
     issue_type issue_type NOT NULL,
     description TEXT NOT NULL,
+    priority VARCHAR(20) DEFAULT 'medium',
     status complaint_status DEFAULT 'created',
     primary_image_url VARCHAR(500), 
     
@@ -26,6 +28,10 @@ CREATE TABLE complaints (
     community_verified BOOLEAN DEFAULT FALSE,
     confirm_yes_count INT DEFAULT 0,
     confirm_no_count INT DEFAULT 0,
+    verification_count INT DEFAULT 0,
+    not_fixed_count INT DEFAULT 0,
+
+    is_hidden BOOLEAN DEFAULT FALSE,
     
     -- Timestamps
     created_at TIMESTAMPTZ DEFAULT NOW(),
